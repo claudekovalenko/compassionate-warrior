@@ -257,6 +257,10 @@
           save();
           setSyncBadge('bad');
           toast('The group passcode was not accepted.');
+        } else if (out && out.error === 'too_many_attempts') {
+          // Somebody has been guessing. Keep our passcode and retry later.
+          setSyncBadge('error');
+          if (!opts.silent) toast('The group is briefly locked after too many wrong tries. Retrying shortly.');
         } else {
           setSyncBadge('error');
           if (!opts.silent) toast('The group said no. Try again in a moment.');
@@ -334,8 +338,8 @@
       <form>
         <div class="dlg-head"><h2>Join the group</h2><button type="button" class="btn sm ghost" data-close>✕</button></div>
         <p class="small muted" style="margin-top:8px">Enter the group passcode KP shared. Once you are in, your commitments and FASTER check-ins are visible to the other four men, and theirs to you.</p>
-        <label class="field"><span>Group passcode</span>
-          <input type="text" name="passcode" autocomplete="off" autocapitalize="none" spellcheck="false" required placeholder="four words and a number"></label>
+        <label class="field"><span>Group passcode <span class="hint">(capitals do not matter)</span></span>
+          <input type="text" name="passcode" autocomplete="off" autocapitalize="characters" spellcheck="false" required placeholder="the code KP shared"></label>
         <p class="small muted">Only people with this passcode can read the group's entries.</p>
         <div class="actions">
           <button class="btn" type="button" data-close>Cancel</button>
@@ -355,8 +359,8 @@
       <form>
         <div class="dlg-head"><h2>Change the group passcode</h2><button type="button" class="btn sm ghost" data-close>✕</button></div>
         <p class="small muted" style="margin-top:8px">This changes it for everyone. The others will each have to enter the new one once.</p>
-        <label class="field"><span>New passcode <span class="hint">(at least 8 characters)</span></span>
-          <input type="text" name="next" autocomplete="off" autocapitalize="none" spellcheck="false" required minlength="8"></label>
+        <label class="field"><span>New passcode <span class="hint">(at least 4 characters, capitals do not matter)</span></span>
+          <input type="text" name="next" autocomplete="off" autocapitalize="characters" spellcheck="false" required minlength="4"></label>
         <div class="actions">
           <button class="btn" type="button" data-close>Cancel</button>
           <button class="btn primary" type="submit">Change it</button>
@@ -371,7 +375,9 @@
             toast('Passcode changed. Tell the brothers the new one.');
             route();
           } else {
-            toast(out && out.error === 'too_short' ? 'Use at least 8 characters.' : 'That did not work.');
+            toast(out && out.error === 'too_short' ? 'Use at least 4 characters.'
+              : out && out.error === 'too_many_attempts' ? 'Too many wrong tries just now. Try again in a few minutes.'
+              : 'That did not work.');
           }
         })
         .catch(() => toast('Could not reach the group right now.'));

@@ -39,6 +39,11 @@ The passcode is deliberately **not** in this repository. KP shares it with the g
 member can rotate it under **More → Change passcode**, which asks everyone to re-enter the new
 one once. Exported backup files leave the passcode out too.
 
+Because the group chose a short, memorable passcode, the gate is also throttled: capitals and
+stray spaces are ignored so it is hard to mistype, and once 25 wrong attempts pile up in fifteen
+minutes further guesses are refused outright. The check runs before the throttle, so the real
+passcode always works and nobody can lock the group out by hammering the endpoint.
+
 Because the content is personal, treat the passcode like a house key. Anyone who has it can read
 the group's entries.
 
